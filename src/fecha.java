@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
@@ -164,8 +165,11 @@ public class fecha {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
-
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                JOptionPane.showMessageDialog(null, cbanio.getSelectedItem() + " " + cbMes.getSelectedItem() + " " + cbDia.getSelectedItem());
+                String fechas = cbanio.getSelectedItem() + " " + cbMes.getSelectedItem() + " " + cbDia.getSelectedItem();
+                connection = getConection();
+                format=SimpleDa
             }
         });
     }
