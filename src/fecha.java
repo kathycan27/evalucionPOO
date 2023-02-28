@@ -4,12 +4,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.TimeUnit;
 
 public class fecha {
+    private HashMap<String, Integer> mesesMap;
     private JPanel panel1;
     private JComboBox cbDia;
     private JComboBox cbMes;
@@ -137,7 +139,19 @@ public class fecha {
         rellenarMes();
         aListaAnio=new ArrayList();
         rellenarAnio();
-
+        mesesMap = new HashMap< String,Integer>();
+        mesesMap.put("Enero",1);
+        mesesMap.put("Febrero",2);
+        mesesMap.put( "Marzo", 3);
+        mesesMap.put( "Abril",4);
+        mesesMap.put( "Mayo",5);
+        mesesMap.put( "Junio",6);
+        mesesMap.put("Julio",7);
+        mesesMap.put("Agosto",8);
+        mesesMap.put("Septiembre",9);
+        mesesMap.put("Octubre",10);
+        mesesMap.put( "Noviembre",11);
+        mesesMap.put( "Diciembre",12);
         cbDia.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
@@ -164,12 +178,30 @@ public class fecha {
         btgenerar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+            int dia=Integer.parseInt(cbDia.getSelectedItem().toString());
+            String mes=cbMes.getSelectedItem().toString();
+            int anio= Integer.parseInt(cbanio.getSelectedItem().toString());
+                String mesFinal = String.format("%02d", mes);
+                String datofecha=anio+"-"+mesFinal+"-"+dia;
+                Date fecha = Date.valueOf(datofecha);
+                //fecha_ingresada.setText(datofecha);//un jtext para mpstrar
+                Connection con;
+                try{
+                    con = getConection();
+                    ps = con.prepareStatement("INSERT INTO fecha (fecha) VALUES (?)");
+                    ps.setDate(1, (java.sql.Date) fecha);
+                    System.out.println(ps);
 
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                JOptionPane.showMessageDialog(null, cbanio.getSelectedItem() + " " + cbMes.getSelectedItem() + " " + cbDia.getSelectedItem());
-                String fechas = cbanio.getSelectedItem() + " " + cbMes.getSelectedItem() + " " + cbDia.getSelectedItem();
-                connection = getConection();
-                format=SimpleDa
+                    int cont = ps.executeUpdate();
+                    if(cont > 0){
+                        JOptionPane.showMessageDialog(null, "Fecha guaradada correctamente");
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Error no se pudo guardar la fecha");
+                    }
+                    con.close();
+                }catch (SQLException s){
+                    System.out.println("Error " + s.getMessage());
+                }
             }
         });
     }
