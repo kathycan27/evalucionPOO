@@ -133,45 +133,52 @@ public class fecha {
         return aAnioa;}
     public fecha() {
 
-        dListaDia=new ArrayList();
-        rellenarDia();
-        mListaMes=new ArrayList();
-        rellenarMes();
-        aListaAnio=new ArrayList();
-        rellenarAnio();
-        mesesMap = new HashMap< String,Integer>();
-        mesesMap.put("Enero",1);
-        mesesMap.put("Febrero",2);
-        mesesMap.put( "Marzo", 3);
-        mesesMap.put( "Abril",4);
-        mesesMap.put( "Mayo",5);
-        mesesMap.put( "Junio",6);
-        mesesMap.put("Julio",7);
-        mesesMap.put("Agosto",8);
-        mesesMap.put("Septiembre",9);
-        mesesMap.put("Octubre",10);
-        mesesMap.put( "Noviembre",11);
-        mesesMap.put( "Diciembre",12);
+        Mes meses=new Mes();
+        String a= String.valueOf(meses.getId());
+        int mesenum=meses.getId();
+
         cbDia.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
-             if(cbMes.getSelectedItem().equals("enero"))
-             {
-                 mesesint =1;
-             } else  {
-                 if (cbMes.getSelectedItem().equals("febrero"))
-                 {
-                     mesesint=2;
-                 }
-
-             }
-
+            public void actionPerformed(ActionEvent e) {
             }
         });
         cbMes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Connection con;
+                String query = null;
+                try{
+                    String mesStr = cbMes.getSelectedItem().toString();
+
+                    cbMes.removeAllItems();
+                    con = getConection();
+
+                    if (mesenum == 4 || mesenum == 6 || mesenum == 9 || mesenum == 11) {
+                        query = "SELECT * FROM dias LIMIT 30";
+                        cbMes.removeAllItems();
+                    }  else if(mesenum == 1 || mesenum ==3 || mesenum == 5 || mesenum == 7
+                            || mesenum==8 || mesenum == 10|| mesenum == 12) {
+                        query = "SELECT * FROM dias LIMIT 31";
+                        cbMes.removeAllItems();
+                    }
+                    else if ((cbMes.getSelectedItem().equals("Febrero") && (Integer.parseInt(cbanio.getSelectedItem().toString()) % 4 == 0))){
+                        mesenum == 2;
+                        query = "SELECT * FROM dias LIMIT 29";
+                        cbDia.removeAllItems();
+                    }
+                    else {
+                        mesInt = 2;
+                        query = "SELECT * FROM dias LIMIT 28"; //el limite de dias
+                        cbDia.removeAllItems();
+                    }
+                    Statement s = con.createStatement();
+                    ResultSet rs = s.executeQuery(query);
+                    while(rs.next()){
+                        cbDia.addItem(rs.getInt(2));
+                    }
+                } catch (HeadlessException | SQLException s){
+                    System.out.println(s);
+                }
 
             }
         });
@@ -179,17 +186,31 @@ public class fecha {
             @Override
             public void actionPerformed(ActionEvent e) {
             int dia=Integer.parseInt(cbDia.getSelectedItem().toString());
-            String mes=cbMes.getSelectedItem().toString();
+
+               // int mesInt = mesesMap.get(mes);
+                //String mesesnu= String.valueOf(mesInt);
             int anio= Integer.parseInt(cbanio.getSelectedItem().toString());
-                String mesFinal = String.format("%02d", mes);
-                String datofecha=anio+"-"+mesFinal+"-"+String.format("%02d", dia);
+                String mesFinal = a;
+                String datofecha=(anio+"-"+mesFinal+"-"+dia);
+
                 //Date fecha = Date.valueOf(datofecha);
+
+
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                java.sql.Date fechaConvertida=null;
+
+                try {
+                    Date parsed =  dateFormat.parse(datofecha);
+                    fechaConvertida = new java.sql.Date(parsed.getDate());
+                } catch(Exception j) {
+                    System.out.println("Error occurred"+j);
+                }
                 //fecha_ingresada.setText(datofecha);//un jtext para mpstrar
                 Connection con;
                 try{
                     con = getConection();
-                    ps = con.prepareStatement("INSERT INTO fecha (fecha) VALUES (?)");
-                    ps.setDate(1, (java.sql.Date) fecha);
+                    ps = con.prepareStatement("INSERT INTO dato (fechas) VALUES (?)");
+                    ps.setDate(1, (java.sql.Date) fechaConvertida);
                     System.out.println(ps);
 
                     int cont = ps.executeUpdate();
