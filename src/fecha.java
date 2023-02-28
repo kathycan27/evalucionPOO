@@ -183,7 +183,7 @@ public class fecha {
             int anio= Integer.parseInt(cbanio.getSelectedItem().toString());
                 String mesFinal = String.format("%02d", mes);
                 String datofecha=anio+"-"+mesFinal+"-"+String.format("%02d", dia);
-                Date fecha = Date.valueOf(datofecha);
+                //Date fecha = Date.valueOf(datofecha);
                 //fecha_ingresada.setText(datofecha);//un jtext para mpstrar
                 Connection con;
                 try{
